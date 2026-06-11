@@ -1,23 +1,26 @@
 # kakao.games
 
-**여기는 바로 kakao.games 입니다. 아직 게임은 하나뿐이지만요.**
+**Welcome to kakao.games. Only one game so far — but it's a start.**
 
-작고 요상한 내러티브 게임들을 차곡차곡 쌓아 가는 인디 게임터입니다.
-만드는 사람은 **마춤법장인** — 마춤법은 못마추지만, 진심은 잘마춥니다.
+An indie game den, stacking up small, quirky narrative games one at a
+time. Made by **Speling Artisan** — gets the speling wrong, gets the
+heart right.
 
-## 지금 플레이할 수 있는 것
+## Playable now
 
-- **도메인 전쟁** (*The Spelling Master's Adventure*) — 실제 도메인 분쟁에서
-  출발한 분기형 텍스트 RPG. 선택이 결말을 바꿉니다.
+- **Domain War** (*The Spelling Master's Adventure*) — a branching
+  text RPG that began as a real-life domain dispute. Your choices
+  change the ending.
 
 - Website: https://kakao.games
-- Status: 게임은 천천히 늘어납니다. 소스는 비공개 저장소에 있고, 여기가
-  공개 홈입니다.
+- Status: games arrive slowly. Source lives in a private repository;
+  this is the public home.
 
-> **Disclaimer**: 이 사이트와 저장소는 카카오게임즈(주)(Kakao Games Corp.)와
-> 아무런 관련이 없습니다. 도메인이 곧 정체성인 곳이라(첫 게임 주제부터
-> 도메인 전쟁입니다), 이 줄만큼은 맞춤법까지 정확하게 적어 둡니다.
+> **Disclaimer**: This site and repository have no affiliation
+> whatsoever with Kakao Games Corp. Around here, the domain *is* the
+> identity (our very first game is about a domain war), so this one
+> line is spelled with perfect care.
 
 ---
 
-© 2026 kakao.games · 마춤법장인
+© 2026 kakao.games · Speling Artisan
