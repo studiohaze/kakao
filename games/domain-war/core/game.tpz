@@ -1,0 +1,77 @@
+// 도메인 전쟁 순수 스테퍼. (STATE, EVENT) -> 새 STATE + 장면 i18n 키 패킷.
+// Domain War pure stepper. (STATE, EVENT) -> new STATE + scene i18n-key packet.
+//
+// 하우스룰(core): 게임 로직은 모두 결정론적이다. 시간, IO, 저장소, 라우터, 번역을 읽지 않는다.
+// House rule (core): all game logic is deterministic. It reads no time, IO, storage, router, or translations.
+//
+// DW1 packet contract:
+//   입력:  DW1 / STATE:<직전 STATE 또는 빈칸> / EVENT:<choice_0|choice_1|choice_2|back|restart>
+//   출력:  DW1 / STATE:<새 STATE> / SCENE:<scene id> / TEXT:<scene text key> / CHOICES:<choice text keys pipe-separated>
+//
+// The stepper deals ONLY in i18n keys. The shell translates text keys with next-i18next.
+// 스테퍼는 i18n 키만 다룬다. 플레이어에게 보이는 문장은 셸이 next-i18next로 번역한다.
+
+import core.state
+import data.scenes
+
+export type 이벤트 = "choice_0" | "choice_1" | "choice_2" | "back" | "restart"
+
+export function 이벤트파싱(토큰: string) -> 이벤트 {
+  match 토큰 {
+    case "choice_0" => "choice_0"
+    case "choice_1" => "choice_1"
+    case "choice_2" => "choice_2"
+    case "back" => "back"
+    case "restart" => "restart"
+    case _ => "back"
+  }
+}
+
+function 선택인덱스(이벤트값: 이벤트) -> int {
+  match 이벤트값 {
+    case "choice_0" => 0
+    case "choice_1" => 1
+    case "choice_2" => 2
+    case "back" => -1
+    case "restart" => -1
+  }
+}
+
+function 선택적용(직전: state.상태, 인덱스: int) -> state.상태 {
+  let 현재장면 = scenes.장면찾기(직전.현재)
+  if 인덱스 < 0 || 인덱스 >= 현재장면.선택지들.length { return 직전 }
+  let 선택지 = 현재장면.선택지들[인덱스]
+  state.이동(직전, 선택지.다음)
+}
+
+export function 진행(직전: state.상태, 이벤트값: 이벤트) -> state.상태 {
+  match 이벤트값 {
+    case "restart" => state.기본상태()
+    case "back" => state.뒤로(직전)
+    case "choice_0" => 선택적용(직전, 선택인덱스(이벤트값))
+    case "choice_1" => 선택적용(직전, 선택인덱스(이벤트값))
+    case "choice_2" => 선택적용(직전, 선택인덱스(이벤트값))
+  }
+}
+
+function 선택키들(장면값: scenes.장면) -> string {
+  let mut 결과 = ""
+  let mut i = 0
+  while i < 장면값.선택지들.length {
+    if i > 0 { 결과 = "{결과}|" }
+    결과 = "{결과}{장면값.선택지들[i].텍스트키}"
+    i = i + 1
+  }
+  결과
+}
+
+export function 출력패킷(에스: state.상태) -> string {
+  let 장면값 = scenes.장면찾기(에스.현재)
+  "DW1\nSTATE:{state.직렬화(에스)}\nSCENE:{장면값.아이디}\nTEXT:{장면값.텍스트키}\nCHOICES:{선택키들(장면값)}"
+}
+
+export function 처리(상태문자열: string, 이벤트문자열: string) -> string {
+  let 직전 = state.역직렬화(상태문자열)
+  let 이벤트값 = 이벤트파싱(이벤트문자열)
+  출력패킷(진행(직전, 이벤트값))
+}

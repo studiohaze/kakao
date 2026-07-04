@@ -1,26 +1,32 @@
 # kakao.games
 
-**Welcome to kakao.games. Only one game so far — but it's a start.**
+작고 엉뚱한 웹게임을 하나씩 모아두는 곳입니다.
+아직 게임은 하나뿐이지만, 뭐든 처음은 하나에서 시작하니까요.
 
-An indie game den, stacking up small, quirky narrative games one at a
-time. Made by **Speling Artisan** — gets the speling wrong, gets the
-heart right.
+만든 사람은 마춤법장인입니다.
+마춤법은 못마추지만 진심은 잘마춥니다.
 
-## Playable now
+## 지금 할 수 있는 게임
 
-- **Domain War** (*The Spelling Master's Adventure*) — a branching
-  text RPG that began as a real-life domain dispute. Your choices
-  change the ending.
+도메인 전쟁, 다른 이름으로는 마춤법장인의 모험.
+kakao.games 에서 바로 플레이할 수 있습니다.
 
-- Website: https://kakao.games
-- Status: games arrive slowly. Source lives in a private repository;
-  this is the public home.
+## 이 저장소
 
-> **Disclaimer**: This site and repository have no affiliation
-> whatsoever with Kakao Games Corp. Around here, the domain *is* the
-> identity (our very first game is about a domain war), so this one
-> line is spelled with perfect care.
+게임은 직접 만든 언어 토파즈로 짜서 WebAssembly로 돌아갑니다.
+개발은 비공개로 하고, 정리한 스냅샷만 여기에 올립니다.
 
----
+## 실행
 
-© 2026 kakao.games · Speling Artisan
+    npm install
+    npm run dev
+
+빌드는 npm run build 입니다.
+게임 소스는 games/domain-war 아래, 토파즈 런타임은 public/topaz 아래에 있습니다.
+
+## 면책
+
+이 사이트와 저장소는 (주)카카오 및 (주)카카오게임즈와 아무 관련이 없습니다.
+여기선 도메인이 곧 정체성이라(첫 게임이 도메인 전쟁이니), 이 한 줄만큼은 오탈자 없이 적습니다.
+
+© 2026 kakao.games · 마춤법장인

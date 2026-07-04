@@ -1,0 +1,28 @@
+{
+  "name": "kakao",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "verify:scene-parity": "node scripts/verify-scene-parity.mjs",
+    "domain-war:replay": "node scripts/domain-war-replay.mjs verify",
+    "verify:i18n": "node scripts/verify-i18n.mjs",
+    "verify:redirects": "node scripts/verify-old-url-redirects.mjs"
+  },
+  "dependencies": {
+    "i18next": "^23.11.0",
+    "next": "13.4.12",
+    "next-i18next": "^15.4.2",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.24",
+    "@types/react": "^18.2.44",
+    "autoprefixer": "^10.4.15",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3"
+  }
+}

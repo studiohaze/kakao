@@ -1,0 +1,264 @@
+// 도메인 전쟁 장면 그래프 데이터. data/gameContent JSON의 모든 장면과 선택지를 Topaz 레코드로 포팅한다.
+// Domain War scene graph data. Every scene and choice edge from data/gameContent is ported as typed Topaz records.
+//
+// 하우스룰(data): 순수 불변 데이터만 둔다. 플레이어에게 보이는 문장은 절대 담지 않고 i18n 키만 담는다.
+// House rule (data): immutable pure data only. Player-visible copy never lives here; only i18n keys do.
+//
+// 패리티 표식(parity marker): 선택지의 원래다음(oldNext)은 JSON의 choices[].next 값 그대로다.
+// The parity marker oldNext is copied byte-for-byte from JSON choices[].next.
+//
+// Key identifiers: 장면아이디=SceneId, 텍스트키=TextKey, 선택지=Choice, 장면=Scene, 장면찾기=findScene.
+
+export type 장면아이디 = "ch1_scene0" | "ch1_scene1" | "ch1_scene2" | "ch1_scene3" | "ch1_scene4" | "ch1_scene5" | "ch2_scene0" | "ch2_scene1" | "ch2_scene2" | "ch2_scene3" | "ch2_scene4" | "ch2_scene5" | "ch2_scene6" | "ch3_scene0" | "ch3_scene1" | "ch3_scene2" | "ch3_scene3" | "ch3_scene4" | "ch4_scene0" | "ch4_scene1" | "ch4_scene2" | "ch4_scene3" | "ch4_scene4" | "ch5_scene0" | "ch5_scene1" | "ch5_scene2" | "ch5_scene3" | "ch5_scene4" | "ch5_scene5" | "ch6_scene0" | "ch6_scene1" | "ch6_scene2" | "ch6_scene3" | "ch6_scene4" | "ch6_scene5" | "ch7_scene0" | "ch7_scene1" | "ch7_scene2" | "ch7_scene3" | "ch7_scene4" | "ch8_scene0" | "ch8_scene1" | "ch8_scene2" | "ch8_scene3" | "ch8_scene4" | "ch9_scene0" | "ch9_scene1" | "ch9_scene2"
+
+export type 텍스트키 = "domainCh1_scene0_text" | "domainCh1_scene0_choice0_text" | "domainCh1_scene0_choice1_text" | "domainCh1_scene1_text" | "domainCh1_scene1_choice0_text" | "domainCh1_scene1_choice1_text" | "domainCh1_scene2_text" | "domainCh1_scene2_choice0_text" | "domainCh1_scene2_choice1_text" | "domainCh1_scene3_text" | "domainCh1_scene3_choice0_text" | "domainCh1_scene4_text" | "domainCh1_scene4_choice0_text" | "domainCh1_scene5_text" | "domainCh1_scene5_choice0_text" | "domainCh2_scene0_text" | "domainCh2_scene0_choice0_text" | "domainCh2_scene0_choice1_text" | "domainCh2_scene1_text" | "domainCh2_scene1_choice0_text" | "domainCh2_scene1_choice1_text" | "domainCh2_scene2_text" | "domainCh2_scene2_choice0_text" | "domainCh2_scene2_choice1_text" | "domainCh2_scene3_text" | "domainCh2_scene3_choice0_text" | "domainCh2_scene4_text" | "domainCh2_scene4_choice0_text" | "domainCh2_scene5_text" | "domainCh2_scene5_choice0_text" | "domainCh2_scene6_text" | "domainCh2_scene6_choice0_text" | "domainCh3_scene0_text" | "domainCh3_scene0_choice0_text" | "domainCh3_scene0_choice1_text" | "domainCh3_scene0_choice2_text" | "domainCh3_scene1_text" | "domainCh3_scene1_choice0_text" | "domainCh3_scene1_choice1_text" | "domainCh3_scene2_text" | "domainCh3_scene2_choice0_text" | "domainCh3_scene2_choice1_text" | "domainCh3_scene3_text" | "domainCh3_scene3_choice0_text" | "domainCh3_scene4_text" | "domainCh3_scene4_choice0_text" | "domainCh4_scene0_text" | "domainCh4_scene0_choice0_text" | "domainCh4_scene0_choice1_text" | "domainCh4_scene1_text" | "domainCh4_scene1_choice0_text" | "domainCh4_scene1_choice1_text" | "domainCh4_scene2_text" | "domainCh4_scene2_choice0_text" | "domainCh4_scene2_choice1_text" | "domainCh4_scene3_text" | "domainCh4_scene3_choice0_text" | "domainCh4_scene4_text" | "domainCh4_scene4_choice0_text" | "domainCh5_scene0_text" | "domainCh5_scene0_choice0_text" | "domainCh5_scene0_choice1_text" | "domainCh5_scene0_choice2_text" | "domainCh5_scene1_text" | "domainCh5_scene1_choice0_text" | "domainCh5_scene2_text" | "domainCh5_scene2_choice0_text" | "domainCh5_scene3_text" | "domainCh5_scene3_choice0_text" | "domainCh5_scene4_text" | "domainCh5_scene4_choice0_text" | "domainCh5_scene5_text" | "domainCh5_scene5_choice0_text" | "domainCh6_scene0_text" | "domainCh6_scene0_choice0_text" | "domainCh6_scene0_choice1_text" | "domainCh6_scene0_choice2_text" | "domainCh6_scene1_text" | "domainCh6_scene1_choice0_text" | "domainCh6_scene2_text" | "domainCh6_scene2_choice0_text" | "domainCh6_scene3_text" | "domainCh6_scene3_choice0_text" | "domainCh6_scene4_text" | "domainCh6_scene4_choice0_text" | "domainCh6_scene5_text" | "domainCh6_scene5_choice0_text" | "domainCh7_scene0_text" | "domainCh7_scene0_choice0_text" | "domainCh7_scene0_choice1_text" | "domainCh7_scene0_choice2_text" | "domainCh7_scene1_text" | "domainCh7_scene1_choice0_text" | "domainCh7_scene2_text" | "domainCh7_scene2_choice0_text" | "domainCh7_scene3_text" | "domainCh7_scene3_choice0_text" | "domainCh7_scene4_text" | "domainCh7_scene4_choice0_text" | "domainCh8_scene0_text" | "domainCh8_scene0_choice0_text" | "domainCh8_scene0_choice1_text" | "domainCh8_scene0_choice2_text" | "domainCh8_scene1_text" | "domainCh8_scene1_choice0_text" | "domainCh8_scene2_text" | "domainCh8_scene2_choice0_text" | "domainCh8_scene3_text" | "domainCh8_scene3_choice0_text" | "domainCh8_scene4_text" | "domainCh8_scene4_choice0_text" | "domainCh9_scene0_text" | "domainCh9_scene0_choice0_text" | "domainCh9_scene1_text" | "domainCh9_scene1_choice0_text" | "domainCh9_scene2_text" | "domainCh9_scene2_choice0_text"
+
+export type 선택지 = {
+  텍스트키: 텍스트키,
+  다음: 장면아이디,
+  원래다음: int
+}
+
+export type 장면 = {
+  아이디: 장면아이디,
+  텍스트키: 텍스트키,
+  선택지들: Array<선택지>
+}
+
+function 선택(텍스트: 텍스트키, 다음: 장면아이디, 원래다음: int) -> 선택지 {
+  { 텍스트키: 텍스트, 다음: 다음, 원래다음: 원래다음 }
+}
+
+function 장면만들기(아이디: 장면아이디, 텍스트: 텍스트키, 선택지들: Array<선택지>) -> 장면 {
+  { 아이디: 아이디, 텍스트키: 텍스트, 선택지들: 선택지들 }
+}
+
+export function 시작장면() -> 장면아이디 { "ch1_scene0" }
+
+// STATE와 URL에서 들어온 문자열을 닫힌 장면 union으로 좁힌다. 손상 값은 시작 장면으로 복귀한다.
+// Narrow a STATE/URL string into the closed SceneId union. Corrupt values safely return to the start scene.
+export function 장면파싱(토큰: string) -> 장면아이디 {
+  match 토큰 {
+    case "ch1_scene0" => "ch1_scene0"
+    case "ch1_scene1" => "ch1_scene1"
+    case "ch1_scene2" => "ch1_scene2"
+    case "ch1_scene3" => "ch1_scene3"
+    case "ch1_scene4" => "ch1_scene4"
+    case "ch1_scene5" => "ch1_scene5"
+    case "ch2_scene0" => "ch2_scene0"
+    case "ch2_scene1" => "ch2_scene1"
+    case "ch2_scene2" => "ch2_scene2"
+    case "ch2_scene3" => "ch2_scene3"
+    case "ch2_scene4" => "ch2_scene4"
+    case "ch2_scene5" => "ch2_scene5"
+    case "ch2_scene6" => "ch2_scene6"
+    case "ch3_scene0" => "ch3_scene0"
+    case "ch3_scene1" => "ch3_scene1"
+    case "ch3_scene2" => "ch3_scene2"
+    case "ch3_scene3" => "ch3_scene3"
+    case "ch3_scene4" => "ch3_scene4"
+    case "ch4_scene0" => "ch4_scene0"
+    case "ch4_scene1" => "ch4_scene1"
+    case "ch4_scene2" => "ch4_scene2"
+    case "ch4_scene3" => "ch4_scene3"
+    case "ch4_scene4" => "ch4_scene4"
+    case "ch5_scene0" => "ch5_scene0"
+    case "ch5_scene1" => "ch5_scene1"
+    case "ch5_scene2" => "ch5_scene2"
+    case "ch5_scene3" => "ch5_scene3"
+    case "ch5_scene4" => "ch5_scene4"
+    case "ch5_scene5" => "ch5_scene5"
+    case "ch6_scene0" => "ch6_scene0"
+    case "ch6_scene1" => "ch6_scene1"
+    case "ch6_scene2" => "ch6_scene2"
+    case "ch6_scene3" => "ch6_scene3"
+    case "ch6_scene4" => "ch6_scene4"
+    case "ch6_scene5" => "ch6_scene5"
+    case "ch7_scene0" => "ch7_scene0"
+    case "ch7_scene1" => "ch7_scene1"
+    case "ch7_scene2" => "ch7_scene2"
+    case "ch7_scene3" => "ch7_scene3"
+    case "ch7_scene4" => "ch7_scene4"
+    case "ch8_scene0" => "ch8_scene0"
+    case "ch8_scene1" => "ch8_scene1"
+    case "ch8_scene2" => "ch8_scene2"
+    case "ch8_scene3" => "ch8_scene3"
+    case "ch8_scene4" => "ch8_scene4"
+    case "ch9_scene0" => "ch9_scene0"
+    case "ch9_scene1" => "ch9_scene1"
+    case "ch9_scene2" => "ch9_scene2"
+    case _ => 시작장면()
+  }
+}
+
+// 장면 데이터는 match 하나로 닫혀 있다. 새 장면을 추가하면 이 함수가 exhaustive gate가 된다.
+// Scene data is closed over one match. Adding a scene makes this function the exhaustive gate.
+export function 장면찾기(아이디: 장면아이디) -> 장면 {
+  match 아이디 {
+    case "ch1_scene0" => 장면만들기("ch1_scene0", "domainCh1_scene0_text", [
+      선택("domainCh1_scene0_choice0_text", "ch1_scene1", 1),
+      선택("domainCh1_scene0_choice1_text", "ch1_scene2", 2)
+    ])
+    case "ch1_scene1" => 장면만들기("ch1_scene1", "domainCh1_scene1_text", [
+      선택("domainCh1_scene1_choice0_text", "ch1_scene3", 3),
+      선택("domainCh1_scene1_choice1_text", "ch1_scene4", 4)
+    ])
+    case "ch1_scene2" => 장면만들기("ch1_scene2", "domainCh1_scene2_text", [
+      선택("domainCh1_scene2_choice0_text", "ch1_scene5", 5),
+      선택("domainCh1_scene2_choice1_text", "ch1_scene4", 4)
+    ])
+    case "ch1_scene3" => 장면만들기("ch1_scene3", "domainCh1_scene3_text", [
+      선택("domainCh1_scene3_choice0_text", "ch2_scene1", 999)
+    ])
+    case "ch1_scene4" => 장면만들기("ch1_scene4", "domainCh1_scene4_text", [
+      선택("domainCh1_scene4_choice0_text", "ch2_scene2", 999)
+    ])
+    case "ch1_scene5" => 장면만들기("ch1_scene5", "domainCh1_scene5_text", [
+      선택("domainCh1_scene5_choice0_text", "ch2_scene0", 999)
+    ])
+    case "ch2_scene0" => 장면만들기("ch2_scene0", "domainCh2_scene0_text", [
+      선택("domainCh2_scene0_choice0_text", "ch2_scene1", 1),
+      선택("domainCh2_scene0_choice1_text", "ch2_scene2", 2)
+    ])
+    case "ch2_scene1" => 장면만들기("ch2_scene1", "domainCh2_scene1_text", [
+      선택("domainCh2_scene1_choice0_text", "ch2_scene3", 3),
+      선택("domainCh2_scene1_choice1_text", "ch2_scene4", 4)
+    ])
+    case "ch2_scene2" => 장면만들기("ch2_scene2", "domainCh2_scene2_text", [
+      선택("domainCh2_scene2_choice0_text", "ch2_scene5", 5),
+      선택("domainCh2_scene2_choice1_text", "ch2_scene6", 6)
+    ])
+    case "ch2_scene3" => 장면만들기("ch2_scene3", "domainCh2_scene3_text", [
+      선택("domainCh2_scene3_choice0_text", "ch3_scene0", 999)
+    ])
+    case "ch2_scene4" => 장면만들기("ch2_scene4", "domainCh2_scene4_text", [
+      선택("domainCh2_scene4_choice0_text", "ch3_scene0", 999)
+    ])
+    case "ch2_scene5" => 장면만들기("ch2_scene5", "domainCh2_scene5_text", [
+      선택("domainCh2_scene5_choice0_text", "ch3_scene0", 999)
+    ])
+    case "ch2_scene6" => 장면만들기("ch2_scene6", "domainCh2_scene6_text", [
+      선택("domainCh2_scene6_choice0_text", "ch3_scene0", 999)
+    ])
+    case "ch3_scene0" => 장면만들기("ch3_scene0", "domainCh3_scene0_text", [
+      선택("domainCh3_scene0_choice0_text", "ch3_scene1", 1),
+      선택("domainCh3_scene0_choice1_text", "ch3_scene2", 2),
+      선택("domainCh3_scene0_choice2_text", "ch3_scene3", 3)
+    ])
+    case "ch3_scene1" => 장면만들기("ch3_scene1", "domainCh3_scene1_text", [
+      선택("domainCh3_scene1_choice0_text", "ch3_scene2", 2),
+      선택("domainCh3_scene1_choice1_text", "ch3_scene3", 3)
+    ])
+    case "ch3_scene2" => 장면만들기("ch3_scene2", "domainCh3_scene2_text", [
+      선택("domainCh3_scene2_choice0_text", "ch3_scene1", 1),
+      선택("domainCh3_scene2_choice1_text", "ch3_scene3", 3)
+    ])
+    case "ch3_scene3" => 장면만들기("ch3_scene3", "domainCh3_scene3_text", [
+      선택("domainCh3_scene3_choice0_text", "ch3_scene4", 4)
+    ])
+    case "ch3_scene4" => 장면만들기("ch3_scene4", "domainCh3_scene4_text", [
+      선택("domainCh3_scene4_choice0_text", "ch4_scene0", 999)
+    ])
+    case "ch4_scene0" => 장면만들기("ch4_scene0", "domainCh4_scene0_text", [
+      선택("domainCh4_scene0_choice0_text", "ch4_scene1", 1),
+      선택("domainCh4_scene0_choice1_text", "ch4_scene2", 2)
+    ])
+    case "ch4_scene1" => 장면만들기("ch4_scene1", "domainCh4_scene1_text", [
+      선택("domainCh4_scene1_choice0_text", "ch4_scene3", 3),
+      선택("domainCh4_scene1_choice1_text", "ch4_scene4", 4)
+    ])
+    case "ch4_scene2" => 장면만들기("ch4_scene2", "domainCh4_scene2_text", [
+      선택("domainCh4_scene2_choice0_text", "ch4_scene3", 3),
+      선택("domainCh4_scene2_choice1_text", "ch4_scene4", 4)
+    ])
+    case "ch4_scene3" => 장면만들기("ch4_scene3", "domainCh4_scene3_text", [
+      선택("domainCh4_scene3_choice0_text", "ch5_scene0", 999)
+    ])
+    case "ch4_scene4" => 장면만들기("ch4_scene4", "domainCh4_scene4_text", [
+      선택("domainCh4_scene4_choice0_text", "ch1_scene0", 0)
+    ])
+    case "ch5_scene0" => 장면만들기("ch5_scene0", "domainCh5_scene0_text", [
+      선택("domainCh5_scene0_choice0_text", "ch5_scene1", 1),
+      선택("domainCh5_scene0_choice1_text", "ch5_scene2", 2),
+      선택("domainCh5_scene0_choice2_text", "ch5_scene3", 3)
+    ])
+    case "ch5_scene1" => 장면만들기("ch5_scene1", "domainCh5_scene1_text", [
+      선택("domainCh5_scene1_choice0_text", "ch5_scene4", 4)
+    ])
+    case "ch5_scene2" => 장면만들기("ch5_scene2", "domainCh5_scene2_text", [
+      선택("domainCh5_scene2_choice0_text", "ch5_scene4", 4)
+    ])
+    case "ch5_scene3" => 장면만들기("ch5_scene3", "domainCh5_scene3_text", [
+      선택("domainCh5_scene3_choice0_text", "ch5_scene4", 4)
+    ])
+    case "ch5_scene4" => 장면만들기("ch5_scene4", "domainCh5_scene4_text", [
+      선택("domainCh5_scene4_choice0_text", "ch5_scene5", 5)
+    ])
+    case "ch5_scene5" => 장면만들기("ch5_scene5", "domainCh5_scene5_text", [
+      선택("domainCh5_scene5_choice0_text", "ch6_scene0", 999)
+    ])
+    case "ch6_scene0" => 장면만들기("ch6_scene0", "domainCh6_scene0_text", [
+      선택("domainCh6_scene0_choice0_text", "ch6_scene1", 1),
+      선택("domainCh6_scene0_choice1_text", "ch6_scene2", 2),
+      선택("domainCh6_scene0_choice2_text", "ch6_scene3", 3)
+    ])
+    case "ch6_scene1" => 장면만들기("ch6_scene1", "domainCh6_scene1_text", [
+      선택("domainCh6_scene1_choice0_text", "ch6_scene4", 4)
+    ])
+    case "ch6_scene2" => 장면만들기("ch6_scene2", "domainCh6_scene2_text", [
+      선택("domainCh6_scene2_choice0_text", "ch6_scene4", 4)
+    ])
+    case "ch6_scene3" => 장면만들기("ch6_scene3", "domainCh6_scene3_text", [
+      선택("domainCh6_scene3_choice0_text", "ch6_scene4", 4)
+    ])
+    case "ch6_scene4" => 장면만들기("ch6_scene4", "domainCh6_scene4_text", [
+      선택("domainCh6_scene4_choice0_text", "ch6_scene5", 5)
+    ])
+    case "ch6_scene5" => 장면만들기("ch6_scene5", "domainCh6_scene5_text", [
+      선택("domainCh6_scene5_choice0_text", "ch7_scene0", 999)
+    ])
+    case "ch7_scene0" => 장면만들기("ch7_scene0", "domainCh7_scene0_text", [
+      선택("domainCh7_scene0_choice0_text", "ch7_scene1", 1),
+      선택("domainCh7_scene0_choice1_text", "ch7_scene2", 2),
+      선택("domainCh7_scene0_choice2_text", "ch7_scene3", 3)
+    ])
+    case "ch7_scene1" => 장면만들기("ch7_scene1", "domainCh7_scene1_text", [
+      선택("domainCh7_scene1_choice0_text", "ch7_scene4", 4)
+    ])
+    case "ch7_scene2" => 장면만들기("ch7_scene2", "domainCh7_scene2_text", [
+      선택("domainCh7_scene2_choice0_text", "ch7_scene3", 3)
+    ])
+    case "ch7_scene3" => 장면만들기("ch7_scene3", "domainCh7_scene3_text", [
+      선택("domainCh7_scene3_choice0_text", "ch7_scene4", 4)
+    ])
+    case "ch7_scene4" => 장면만들기("ch7_scene4", "domainCh7_scene4_text", [
+      선택("domainCh7_scene4_choice0_text", "ch8_scene0", 999)
+    ])
+    case "ch8_scene0" => 장면만들기("ch8_scene0", "domainCh8_scene0_text", [
+      선택("domainCh8_scene0_choice0_text", "ch8_scene1", 1),
+      선택("domainCh8_scene0_choice1_text", "ch8_scene2", 2),
+      선택("domainCh8_scene0_choice2_text", "ch8_scene3", 3)
+    ])
+    case "ch8_scene1" => 장면만들기("ch8_scene1", "domainCh8_scene1_text", [
+      선택("domainCh8_scene1_choice0_text", "ch8_scene4", 4)
+    ])
+    case "ch8_scene2" => 장면만들기("ch8_scene2", "domainCh8_scene2_text", [
+      선택("domainCh8_scene2_choice0_text", "ch8_scene4", 4)
+    ])
+    case "ch8_scene3" => 장면만들기("ch8_scene3", "domainCh8_scene3_text", [
+      선택("domainCh8_scene3_choice0_text", "ch8_scene4", 4)
+    ])
+    case "ch8_scene4" => 장면만들기("ch8_scene4", "domainCh8_scene4_text", [
+      선택("domainCh8_scene4_choice0_text", "ch9_scene0", 999)
+    ])
+    case "ch9_scene0" => 장면만들기("ch9_scene0", "domainCh9_scene0_text", [
+      선택("domainCh9_scene0_choice0_text", "ch9_scene1", 1)
+    ])
+    case "ch9_scene1" => 장면만들기("ch9_scene1", "domainCh9_scene1_text", [
+      선택("domainCh9_scene1_choice0_text", "ch9_scene2", 2)
+    ])
+    case "ch9_scene2" => 장면만들기("ch9_scene2", "domainCh9_scene2_text", [
+      선택("domainCh9_scene2_choice0_text", "ch1_scene0", 0)
+    ])
+  }
+}

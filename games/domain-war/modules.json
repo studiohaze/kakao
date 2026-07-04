@@ -1,0 +1,10 @@
+{
+  "entry": "main.tpz",
+  "root": "",
+  "files": [
+    "main.tpz",
+    "core/game.tpz",
+    "core/state.tpz",
+    "data/scenes.tpz"
+  ]
+}
