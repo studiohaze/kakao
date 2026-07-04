@@ -1,0 +1,135 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Pretendard Font CDN */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+/* 세로 스크롤바를 항상 예약해 둔다. 홈(짧음)과 게임 씬(김) 사이를 오갈 때
+   스크롤바가 생겼다 사라지며 중앙 정렬 컬럼이 좌우로 밀리는 점프를 막는다.
+   Always reserve the vertical scrollbar so the centered column never shifts
+   sideways when navigating between the short home page and tall game scenes. */
+html {
+  overflow-y: scroll;
+}
+
+html, 
+body {
+  padding: 0;
+  margin: 0;
+  font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  /* 기존 font-family에 Pretendard 추가 및 우선순위 설정 */
+  /* color: #FAFAFA; */ /* GameFrame 내부 흰 배경과의 충돌로 전역 색상 설정 제거 */
+  background-color: #121212; /* 전체 배경색을 어두운 회색으로 설정 */
+}
+
+/* ===== 애니메이션 추가 ===== */
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.pop-in {
+  animation: popIn 0.6s ease-out forwards;
+}
+
+.slide-up {
+  animation: slideUp 0.8s ease-out forwards;
+}
+
+.page-container {
+  background-color: #FFFFFF; /* Persistent white background */
+  width: 100%; /* Occupy available width for centering */
+  max-width: 28rem; /* Equivalent to max-w-md, matching GameFrame */
+  min-height: 100vh; /* Ensure it fills screen height */
+  margin-left: auto;  /* For centering (mx-auto) */
+  margin-right: auto; /* For centering (mx-auto) */
+  /* Note: No opacity transition here. This container remains opaque. */
+  /* Padding and shadow will come from GameFrame inside the transitioning child. */
+}
+
+.page-content-transition {
+  width: 100%; /* Occupy full width of .page-container */
+  transition: opacity 0.3s ease-in-out; /* Opacity transition applied here */
+}
+
+body.page-transition-active .page-content-transition {
+  opacity: 0; /* Only the content inside .page-container fades */
+}
+
+/* Loading Spinner Styles */
+.loading-spinner {
+  width: 48px; /* Adjust size as needed */
+  height: 48px; /* Adjust size as needed */
+  border-radius: 50%;
+  border: 5px solid rgba(0, 0, 0, 0.1); /* Light grey track */
+  border-left-color: #8B5CF6; /* Purple color (Tailwind purple-500) for the active part */
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.tz-code .tz-comment {
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.tz-code .tz-keyword,
+.tz-code .tz-storage,
+.tz-code .tz-module,
+.tz-code .tz-tag {
+  color: #c4b5fd;
+  font-weight: 700;
+}
+
+.tz-code .tz-str {
+  color: #86efac;
+}
+
+.tz-code .tz-num,
+.tz-code .tz-const,
+.tz-code .tz-support {
+  color: #fde68a;
+}
+
+.tz-code .tz-type,
+.tz-code .tz-func {
+  color: #93c5fd;
+}
+
+.tz-code .tz-op,
+.tz-code .tz-esc,
+.tz-code .tz-interp {
+  color: #fca5a5;
+}
+
+.tz-code .tz-esc,
+.tz-code .tz-interp {
+  font-weight: 700;
+}
+
+.tz-code .tz-ident {
+  color: inherit;
+}

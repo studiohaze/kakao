@@ -1,0 +1,8 @@
+[
+  { "choices": [{ "next": 1 }, { "next": 2 }] },
+  { "choices": [{ "next": 3 }, { "next": 4 }] },
+  { "choices": [{ "next": 5 }, { "next": 4 }] },
+  { "choices": [{ "next": 999, "target": "ch2_scene1" }] },
+  { "choices": [{ "next": 999, "target": "ch2_scene2" }] },
+  { "choices": [{ "next": 999 }] }
+]

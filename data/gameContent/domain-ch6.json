@@ -1,0 +1,8 @@
+[
+  { "choices": [{ "next": 1 }, { "next": 2 }, { "next": 3 }] },
+  { "choices": [{ "next": 4 }] },
+  { "choices": [{ "next": 4 }] },
+  { "choices": [{ "next": 4 }] },
+  { "choices": [{ "next": 5 }] },
+  { "choices": [{ "next": 999 }] }
+]

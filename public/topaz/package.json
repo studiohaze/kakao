@@ -1,0 +1,16 @@
+{
+  "name": "topaz_wasm",
+  "type": "module",
+  "description": "Browser-playground bindings for the Topaz toolchain (run/check in wasm).",
+  "version": "0.0.0",
+  "files": [
+    "topaz_wasm_bg.wasm",
+    "topaz_wasm.js",
+    "topaz_wasm.d.ts"
+  ],
+  "main": "topaz_wasm.js",
+  "types": "topaz_wasm.d.ts",
+  "sideEffects": [
+    "./snippets/*"
+  ]
+}

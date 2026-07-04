@@ -1,0 +1,19 @@
+{
+  "schema": "KAKAO_ARCADE_1",
+  "games": [
+    {
+      "id": "domain-war",
+      "titleKey": "domainWar_title",
+      "descriptionKey": "domainWar_description",
+      "basePath": "domain-war",
+      "entry": "main.tpz",
+      "root": "",
+      "files": [
+        "main.tpz",
+        "core/game.tpz",
+        "core/state.tpz",
+        "data/scenes.tpz"
+      ]
+    }
+  ]
+}

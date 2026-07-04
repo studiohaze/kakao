@@ -1,0 +1,99 @@
+// 도메인 전쟁 STATE 문자열. 순수 코어는 브라우저 저장소나 URL을 읽지 않고, 이 한 줄 상태만 주고받는다.
+// Domain War STATE string. The pure core never reads browser storage or the URL; it only receives and returns this one-line state.
+//
+// 하우스룰(core): export는 타입/함수/불변 값만. 최상위 가변 상태, print, input, now_millis, 파일 IO 금지.
+// House rule (core): export only types/functions/immutable values; no module-level mutability, print, input, now_millis, or file IO.
+//
+// STATE v1:
+//   v1:<currentScene>:<visitedSceneIds comma-separated>
+// 예: v1:ch3_scene4:ch1_scene0,ch1_scene1,ch1_scene3,ch2_scene0
+// Example: v1:ch3_scene4:ch1_scene0,ch1_scene1,ch1_scene3,ch2_scene0
+//
+// 방문경로는 "뒤로"를 위한 순수 스택이다. URL deep-link는 빈 방문경로로 특정 장면을 렌더한다.
+// visitedPath is the pure stack for Back. URL deep links render a scene with an empty path.
+
+import data.scenes
+
+export type 상태 = {
+  버전: int,
+  현재: scenes.장면아이디,
+  방문경로: Array<scenes.장면아이디>
+}
+
+export function 기본상태() -> 상태 {
+  { 버전: 1, 현재: scenes.시작장면(), 방문경로: [] }
+}
+
+export function 위치상태(아이디: scenes.장면아이디) -> 상태 {
+  { 버전: 1, 현재: 아이디, 방문경로: [] }
+}
+
+function 경로직렬화(경로: Array<scenes.장면아이디>) -> string {
+  let mut 결과 = ""
+  let mut i = 0
+  while i < 경로.length {
+    if i > 0 { 결과 = "{결과}," }
+    결과 = "{결과}{경로[i]}"
+    i = i + 1
+  }
+  결과
+}
+
+export function 직렬화(에스: 상태) -> string {
+  "v1:{에스.현재}:{경로직렬화(에스.방문경로)}"
+}
+
+function 경로파싱(토큰: string) -> Array<scenes.장면아이디> {
+  let mut 결과: Array<scenes.장면아이디> = []
+  let 다듬 = 토큰.trim()
+  if 다듬 == "" { return 결과 }
+  let 조각들 = 다듬.split(",")
+  let mut i = 0
+  while i < 조각들.length && i < 128 {
+    let 조각 = 조각들[i].trim()
+    if 조각 != "" { 결과.push(scenes.장면파싱(조각)) }
+    i = i + 1
+  }
+  결과
+}
+
+export function 역직렬화(문자열: string) -> 상태 {
+  let 다듬 = 문자열.trim()
+  if 다듬 == "" { return 기본상태() }
+  let 부분 = 다듬.split(":")
+  if 부분.length < 2 { return 기본상태() }
+  let 현재 = scenes.장면파싱(부분[1])
+  let 경로 = if 부분.length >= 3 { 경로파싱(부분[2]) } else { [] }
+  { 버전: 1, 현재: 현재, 방문경로: 경로 }
+}
+
+function 경로복사추가(경로: Array<scenes.장면아이디>, 아이디: scenes.장면아이디) -> Array<scenes.장면아이디> {
+  let mut 결과: Array<scenes.장면아이디> = []
+  let mut i = 0
+  while i < 경로.length && i < 127 {
+    결과.push(경로[i])
+    i = i + 1
+  }
+  결과.push(아이디)
+  결과
+}
+
+function 경로끝제거(경로: Array<scenes.장면아이디>) -> Array<scenes.장면아이디> {
+  let mut 결과: Array<scenes.장면아이디> = []
+  let mut i = 0
+  while i + 1 < 경로.length {
+    결과.push(경로[i])
+    i = i + 1
+  }
+  결과
+}
+
+export function 이동(에스: 상태, 다음: scenes.장면아이디) -> 상태 {
+  { 버전: 1, 현재: 다음, 방문경로: 경로복사추가(에스.방문경로, 에스.현재) }
+}
+
+export function 뒤로(에스: 상태) -> 상태 {
+  if 에스.방문경로.length == 0 { return 에스 }
+  let 이전 = 에스.방문경로[에스.방문경로.length - 1]
+  { 버전: 1, 현재: 이전, 방문경로: 경로끝제거(에스.방문경로) }
+}

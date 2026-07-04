@@ -1,0 +1,5 @@
+[
+  { "choices": [{ "next": 1 }] },
+  { "choices": [{ "next": 2 }] },
+  { "choices": [{ "next": 0 }] }
+]
