@@ -29,14 +29,7 @@ export function 위치상태(아이디: scenes.장면아이디) -> 상태 {
 }
 
 function 경로직렬화(경로: Array<scenes.장면아이디>) -> string {
-  let mut 결과 = ""
-  let mut i = 0
-  while i < 경로.length {
-    if i > 0 { 결과 = "{결과}," }
-    결과 = "{결과}{경로[i]}"
-    i = i + 1
-  }
-  결과
+  경로.map((아이디) => "{아이디}").join(",")
 }
 
 export function 직렬화(에스: 상태) -> string {
@@ -48,11 +41,10 @@ function 경로파싱(토큰: string) -> Array<scenes.장면아이디> {
   let 다듬 = 토큰.trim()
   if 다듬 == "" { return 결과 }
   let 조각들 = 다듬.split(",")
-  let mut i = 0
-  while i < 조각들.length && i < 128 {
+  let 한계 = if 조각들.length < 128 { 조각들.length } else { 128 }
+  for i in 0..<한계 {
     let 조각 = 조각들[i].trim()
     if 조각 != "" { 결과.push(scenes.장면파싱(조각)) }
-    i = i + 1
   }
   결과
 }
@@ -69,10 +61,9 @@ export function 역직렬화(문자열: string) -> 상태 {
 
 function 경로복사추가(경로: Array<scenes.장면아이디>, 아이디: scenes.장면아이디) -> Array<scenes.장면아이디> {
   let mut 결과: Array<scenes.장면아이디> = []
-  let mut i = 0
-  while i < 경로.length && i < 127 {
+  let 한계 = if 경로.length < 127 { 경로.length } else { 127 }
+  for i in 0..<한계 {
     결과.push(경로[i])
-    i = i + 1
   }
   결과.push(아이디)
   결과
@@ -80,10 +71,9 @@ function 경로복사추가(경로: Array<scenes.장면아이디>, 아이디: sc
 
 function 경로끝제거(경로: Array<scenes.장면아이디>) -> Array<scenes.장면아이디> {
   let mut 결과: Array<scenes.장면아이디> = []
-  let mut i = 0
-  while i + 1 < 경로.length {
+  let 한계 = if 경로.length == 0 { 0 } else { 경로.length - 1 }
+  for i in 0..<한계 {
     결과.push(경로[i])
-    i = i + 1
   }
   결과
 }

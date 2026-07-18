@@ -29,7 +29,7 @@ export function run_with_input(src: string, input: string): string;
 export function run_with_modules(entry: string, root: string, modules_json: string, input: string): string;
 
 /**
- * The Topaz toolchain version (e.g. `5.2.1`) — the reproducibility stamp reports the exact
+ * The Topaz toolchain version (e.g. `5.4.0`) — the reproducibility stamp reports the exact
  * toolchain that produced a result. (The playground crate itself is unversioned; this is the
  * workspace/language-line version from `topaz_syntax`.)
  */

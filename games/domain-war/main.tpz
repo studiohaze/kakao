@@ -10,25 +10,19 @@
 
 import core.game { 처리 }
 
-// 문자열에서 접두사 뒤의 꼬리를 돌려준다. Topaz string에는 slice가 없으므로 scalar 배열을 잘라 합친다.
-// Return the tail of a string after a prefix. Topaz string has no slice, so we slice scalars and join.
+// 문자열에서 접두사 뒤의 꼬리를 Unicode scalar 인덱스 기반 slice로 돌려준다.
+// Return the tail after a prefix with Unicode-scalar-indexed slice.
 function 접두사뒤(전체: string, 접두사: string) -> string {
-  let 글자들 = 전체.scalars()
-  let 자른 = 글자들.slice(접두사.scalars().length, 글자들.length)
-  let mut 결과 = ""
-  for 글 in 자른 { 결과 = 결과 + 글 }
-  결과
+  전체.slice(접두사.scalars().length, 전체.scalars().length)
 }
 
 // "PREFIX:"로 시작하는 줄에서 값을 읽는다. 없으면 빈 문자열.
 // Read the value after a "PREFIX:" line. Missing values become empty string.
 function 줄값(원본: string, 접두사: string) -> string {
-  let mut 값 = ""
-  for 줄 in 원본.split("\n") {
+  원본.split("\n").reduce("", (값, 줄) => {
     let 다듬 = 줄.trim()
-    if 다듬.startsWith(접두사) { 값 = 접두사뒤(다듬, 접두사) }
-  }
-  값.trim()
+    if 다듬.startsWith(접두사) { 접두사뒤(다듬, 접두사) } else { 값 }
+  }).trim()
 }
 
 let 패킷 = input()
